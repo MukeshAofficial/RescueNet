@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Myanmar Water Quality Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+  <style>
+    body { margin: 0; padding: 0; }
+    header { background-color: #333; color: #fff; padding: 10px; text-align: left; }
+    #container { display: flex; height: calc(100vh - 50px); }
+    #sidebar { width: 250px; padding: 20px; background-color: #f0f0f0; overflow-y: auto; }
+    #map-container { flex: 1; height: 100%; }
+    .category-btn { margin-top: 10px; padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Myanmar Water Quality Map</h1>
+  </header>
+
+  <div id="container">
+    <div id="sidebar">
+      <h2>Add Water Quality Location</h2>
+      <button class="category-btn" id="add-clean-water" style="background-color: blue;">Clean Water</button>
+      <button class="category-btn" id="add-polluted-water" style="background-color: red;">Polluted Water</button>
+      <button class="category-btn" id="add-disease-outbreak" style="background-color: orange;">Disease Outbreak</button>
+      <div id="locations-list"></div>
+    </div>
+    <div id="map-container"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    var map = L.map('map-container').setView([21.9162, 95.956], 6);
+    var selectedLatLng, selectedCategory;
+    var locationGroup = L.layerGroup().addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    function addMarker(category, latLng) {
+      let markerColor;
+      switch (category) {
+        case 'clean':
+          markerColor = 'blue';
+          break;
+        case 'polluted':
+          markerColor = 'red';
+          break;
+        case 'disease':
+          markerColor = 'orange';
+          break;
+      }
+
+      var marker = L.marker([latLng.lat, latLng.lng], {
+        icon: L.divIcon({ className: 'marker', html: `<div style="background-color: ${markerColor}; width: 20px; height: 20px; border-radius: 50%;"></div>` })
+      }).addTo(locationGroup);
+
+      // Store the marker in local storage
+      let markers = JSON.parse(localStorage.getItem('markers')) || [];
+      markers.push({ category: category, latitude: latLng.lat, longitude: latLng.lng });
+      localStorage.setItem('markers', JSON.stringify(markers));
+
+      // Save location to the backend
+      $.ajax({
+        url: '/save_water_quality_location',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ latitude: latLng.lat, longitude: latLng.lng, category: category }),
+        success: function(response) {
+          console.log('Location saved:', response);
+        },
+        error: function(xhr) {
+          console.error('Failed to save location:', xhr);
+          if (xhr.status === 400) {
+            alert('Location already exists.');
+          }
+        }
+      });
+    }
+
+    function loadWaterQualityLocations() {
+      // Load existing locations from the backend
+      $.get('/get_water_quality_locations', function(data) {
+        data.forEach(function(location) {
+          var latLng = { lat: location.latitude, lng: location.longitude };
+          addMarker(location.category, latLng);
+        });
+      });
+
+      // Load markers from local storage
+      let storedMarkers = JSON.parse(localStorage.getItem('markers')) || [];
+      storedMarkers.forEach(function(location) {
+        var latLng = { lat: location.latitude, lng: location.longitude };
+        addMarker(location.category, latLng);
+      });
+    }
+
+    $('.category-btn').on('click', function () {
+      const category = $(this).attr('id').split('-')[1];
+      map.once('click', function (e) {
+        addMarker(category, e.latlng);
+      });
+    });
+
+    $(document).ready(function() {
+      loadWaterQualityLocations();
+    });
+  </script>
+</body>
+</html>

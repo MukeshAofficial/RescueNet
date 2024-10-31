@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Injury Recommendations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<style>
+   body {
+      background: linear-gradient(130deg, #000, #061133, #645985);
+      background-size: 200% 200%;
+      animation: gradientAnimation 6s ease infinite;
+    }
+</style>
+<body class="bg-gray-900 text-white font-sans">
+
+  <!-- Heading -->
+  <h1 class="text-4xl font-bold text-center mt-10 mb-6 text-white">Injury Recommendations</h1>
+
+  <!-- Video Element -->
+  <div class="flex flex-col items-center justify-center">
+    <video id="video" class="rounded-lg shadow-lg mb-6 w-80 md:w-96 lg:w-128" autoplay></video>
+
+    <!-- Buttons -->
+    <button id="snap" class="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg shadow-md mb-4 transition duration-300">
+      Snap Photo
+    </button>
+    <button id="camera-switch" class="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-300">
+      Switch Camera
+    </button>
+  </div>
+
+  <!-- Loading Popup (Hidden by default) -->
+  <div id="loadingPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-gray-800 text-white p-6 rounded-lg shadow-lg text-center space-y-4 animate-fadeIn">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid mx-auto"></div>
+      <p class="text-lg font-semibold">Image is being analyzed, please wait...</p>
+    </div>
+  </div>
+
+  <!-- Canvas Element (Hidden) -->
+  <canvas id="canvas" class="hidden"></canvas>
+
+  <script>
+    let currentStream;
+
+    function startCamera() {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function (stream) {
+          currentStream = stream;
+          const video = document.getElementById('video');
+          video.srcObject = stream;
+        })
+        .catch(function (err) {
+          console.error('Error accessing camera:', err);
+        });
+    }
+
+    function switchCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+        startCamera();
+      }
+    }
+
+    // Start the camera when the page loads
+    startCamera();
+
+    // Show loading popup function
+    function showLoadingPopup() {
+      const loadingPopup = document.getElementById('loadingPopup');
+      loadingPopup.classList.remove('hidden');
+      loadingPopup.classList.add('flex');
+    }
+
+    // Hide loading popup function
+    function hideLoadingPopup() {
+      const loadingPopup = document.getElementById('loadingPopup');
+      loadingPopup.classList.add('hidden');
+      loadingPopup.classList.remove('flex');
+    }
+
+    // Take a snapshot when the Snap Photo button is clicked
+    document.getElementById('snap').addEventListener('click', function () {
+      showLoadingPopup(); // Show the popup
+
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const context = canvas.getContext('2d');
+
+      // Draw the current frame from the video onto the canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Convert the canvas content to a data URL (base64 encoded image)
+      const dataURL = canvas.toDataURL('image/png');
+
+      // Simulate an image analysis delay (for demonstration)
+      setTimeout(() => {
+        // Send the data URL to the server
+        fetch('/uploads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ image: dataURL })
+        })
+          .then(response => {
+            if (response.ok) {
+              console.log('Image uploaded successfully');
+              // Redirect to the result page
+              window.location.href = '/result';
+            } else {
+              console.error('Image upload failed:', response.statusText);
+            }
+          })
+          .catch(error => console.error('Error uploading image:', error))
+          .finally(() => hideLoadingPopup()); // Hide the popup once done
+      }, 2000); // 2-second delay to mimic processing time
+    });
+
+    // Switch camera when the Switch Camera button is clicked
+    document.getElementById('camera-switch').addEventListener('click', switchCamera);
+  </script>
+</body>
+
+</html>

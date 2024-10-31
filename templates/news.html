@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flood News - Myanmar Flood Response System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Additional CSS for animations */
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .hover-grow:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white font-sans">
+
+    <!-- Header Section -->
+    <header class="py-10 text-center">
+        <h1 class="text-4xl font-bold fade-in">Myanmar Flood News</h1>
+        <p class="mt-4 text-gray-400">Stay updated with the latest news and safety information regarding floods.</p>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav class="container mx-auto px-4 mb-0 text-center">
+        <a href="#" class="text-white hover:text-gray-300 mx-2">Home</a>
+        <a href="/news" class="text-white hover:text-gray-300 mx-2">Flood News</a>
+        <a href="/safety-tips" class="text-white hover:text-gray-300 mx-2">Safety Tips</a>
+        <a href="/contact" class="text-white hover:text-gray-300 mx-2">Contact</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <div class="text-center mb-2">
+            <h2 class="text-3xl font-bold text-blue-400">Flood Updates and Safety Information</h2>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main news section -->
+            <div class="lg:col-span-2">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div id="news-container" class="space-y-6">
+                        <!-- Articles will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="space-y-8">
+                <!-- Latest Safety Tips -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-bold mb-4 text-blue-400">Safety Tips</h2>
+                    <ul class="list-disc pl-5 space-y-2 text-gray-400">
+                        <li>Stay informed of flood warnings in your area.</li>
+                        <li>Have an emergency plan in place.</li>
+                        <li>Avoid walking or driving through floodwaters.</li>
+                        <li>Prepare an emergency kit with essentials.</li>
+                    </ul>
+                </div>
+                <!-- Contact Information -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-bold mb-4 text-blue-400">Emergency Contacts</h2>
+                    <p class="text-gray-400">For immediate assistance, contact local emergency services or flood relief organizations in Myanmar.</p>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 py-4 text-center">
+        <p class="text-gray-400">Stay safe and stay informed with our flood updates.</p>
+    </footer>
+
+    <script>
+        // Fetch Myanmar flood news articles from Flask API
+        async function fetchNews() {
+            const response = await fetch('/api/news');
+            const articles = await response.json();
+
+            const newsContainer = document.getElementById('news-container');
+            articles.forEach(article => {
+                const articleEl = document.createElement('div');
+                articleEl.classList.add('bg-gray-700', 'p-4', 'rounded-lg', 'shadow-md', 'hover:bg-gray-600', 'transition', 'duration-300', 'ease-in-out');
+
+                articleEl.innerHTML = `
+                    <div class="flex items-center mb-4">
+                        <img src="${article.urlToImage}" alt="News Image" class="w-32 h-32 rounded-lg object-cover mr-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-blue-400">${article.title}</h3>
+                            <p class="text-gray-300">${article.description}</p>
+                            <a href="${article.url}" target="_blank" class="text-blue-300 hover:text-blue-200 mt-2 inline-block">Read more</a>
+                        </div>
+                    </div>
+                `;
+                newsContainer.appendChild(articleEl);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchNews);
+    </script>
+</body>
+
+</html>

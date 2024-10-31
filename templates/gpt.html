@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Animated gradient background */
+    body {
+      background: linear-gradient(130deg, #000, #061133, #645985);
+      background-size: 200% 200%;
+      animation: gradientAnimation 6s ease infinite;
+    }
+
+    /* Custom loading bar animation */
+    @keyframes bounce {
+      0%, 100% { transform: scaleY(0.4); }
+      50% { transform: scaleY(1); }
+    }
+
+    @keyframes gradientAnimation {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Fade-in effect for listening text */
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center h-screen text-white">
+
+  <div class="text-center space-y-6">
+    <!-- Loading Bar Animation -->
+    <div class="flex justify-center space-x-2">
+      <div class="w-2 h-12 bg-teal-300 rounded animate-bounce" style="animation-delay: 0s;"></div>
+      <div class="w-2 h-12 bg-teal-300 rounded animate-bounce" style="animation-delay: 0.1s;"></div>
+      <div class="w-2 h-12 bg-teal-300 rounded animate-bounce" style="animation-delay: 0.2s;"></div>
+      <div class="w-2 h-12 bg-teal-300 rounded animate-bounce" style="animation-delay: 0.3s;"></div>
+      <div class="w-2 h-12 bg-teal-300 rounded animate-bounce" style="animation-delay: 0.4s;"></div>
+    </div>
+
+    <!-- Listening Text with Fade Animation -->
+    <p id="listening-text" class="text-xl font-semibold animate-pulse" style="animation: fadeInOut 2s ease-in-out infinite;">
+      Listening...
+    </p>
+
+    <!-- Response Text -->
+    <h2 class="text-2xl font-bold mt-4">Generated Response:</h2>
+    <p id="response-text" class="text-lg mt-2">{{ response }}</p>
+
+    <!-- Audio Player (if available) -->
+    {% if audio %}
+      <audio id="audioPlayer" controls autoplay class="mt-4 mx-auto block w-3/4">
+        <source src="data:audio/mp3;base64,{{ audio }}" type="audio/mp3">
+        Your browser does not support the audio element.
+      </audio>
+    {% endif %}
+  </div>
+
+  <form id="speechForm" action="/gpt" method="POST">
+    <input type="hidden" id="transcribed-text" name="transcribed_text">
+  </form>
+
+  <script>
+    // Speech Recognition Initialization
+    function startSpeechRecognition() {
+      if ('webkitSpeechRecognition' in window) {
+        var recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = function(event) {
+          var transcript = event.results[0][0].transcript;
+          document.getElementById('transcribed-text').value = transcript;
+          document.getElementById('speechForm').submit();
+        };
+
+        recognition.start();
+      } else {
+        alert('Speech recognition not supported in this browser.');
+      }
+    }
+
+    // Automatically restart speech recognition after audio playback
+    var audioPlayer = document.getElementById('audioPlayer');
+    if (audioPlayer) {
+      audioPlayer.addEventListener('ended', function() {
+        startSpeechRecognition();
+      });
+    } else {
+      startSpeechRecognition();
+    }
+  </script>
+</body>
+</html>

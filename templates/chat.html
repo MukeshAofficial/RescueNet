@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Chatrooms</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+         body {
+      background: linear-gradient(130deg, #000, #061133, #645985);
+      background-size: 200% 200%;
+      animation: gradientAnimation 6s ease infinite;
+    }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var socket = io();
+
+            // Auto-populate room name on card click
+            $('.room-card').click(function () {
+                var roomName = $(this).data('room');
+                $('#room-input').val(roomName);
+            });
+
+            $('#join-btn').click(function () {
+                var room = $('#room-input').val();
+                socket.emit('join', { room: room });
+            });
+
+            $('#leave-btn').click(function () {
+                var room = $('#room-input').val();
+                socket.emit('leave', { room: room });
+            });
+
+            $('#send-btn').click(sendMessage);
+
+            // Trigger send message on Enter key press
+            $('#message-input').keypress(function (e) {
+                if (e.which === 13) { // 13 is the Enter key code
+                    sendMessage();
+                }
+            });
+
+            function sendMessage() {
+                var message = $('#message-input').val();
+                var room = $('#room-input').val();
+                if (message.trim() !== "") {
+                    socket.emit('message', { message: message, room: room });
+                    $('#message-input').val(''); // Clear input after sending
+                }
+            }
+
+            socket.on('message', function (data) {
+                $('#chat-box').append('<p class="bg-gray-100 p-2 rounded-md my-2 text-gray-700">' + data.msg + '</p>');
+                $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+            });
+        });
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+    <div class="container mx-auto p-6 bg-gray-800 rounded-lg shadow-lg w-full max-w-3xl">
+        <h1 class="text-3xl font-bold text-center mb-6">Emergency Chatrooms</h1>
+
+        <!-- Room Selection Row -->
+        <div class="flex justify-between mb-6">
+            <div data-room="emergency" class="room-card bg-blue-500 text-white text-center p-4 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105" style="width: 18%;">
+                Emergency
+            </div>
+            <div data-room="rescue" class="room-card bg-green-500 text-white text-center p-4 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105" style="width: 18%;">
+                Rescue
+            </div>
+            <div data-room="help" class="room-card bg-red-500 text-white text-center p-4 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105" style="width: 18%;">
+                Help
+            </div>
+            <div data-room="medical queries" class="room-card bg-yellow-500 text-white text-center p-4 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105" style="width: 18%;">
+                Medical Queries
+            </div>
+            <div data-room="ask for food" class="room-card bg-purple-500 text-white text-center p-4 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105" style="width: 18%;">
+                Ask for Food
+            </div>
+        </div>
+
+        <!-- Room Join Section -->
+        <div class="flex items-center mb-4 space-x-4">
+            <input type="text" id="room-input" placeholder="Enter Room Name" class="px-4 py-2 rounded-md text-gray-900 w-64" readonly>
+            <button id="join-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md">Join Room</button>
+            <button id="leave-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md">Leave Room</button>
+        </div>
+
+        <!-- Chat Interface -->
+        <div id="chat-box" class="bg-gray-100 text-gray-800 rounded-lg shadow-lg p-4 mb-4 max-h-80 overflow-y-auto">
+            <!-- Chat messages will be displayed here -->
+        </div>
+
+        <!-- Message Input Section -->
+        <div class="flex items-center space-x-4">
+            <input type="text" id="message-input" placeholder="Enter Message" class="w-full px-4 py-2 rounded-md text-gray-900">
+            <button id="send-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">Send</button>
+        </div>
+    </div>
+</body>
+
+</html>

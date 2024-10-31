@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Damage Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-3xl font-bold text-center mb-8">View Damage Reports</h1>
+        
+        <div id="map" class="w-full h-screen border rounded"></div>
+    </div>
+
+    <script>
+        const map = L.map('map').setView([16.8661, 96.1951], 5); // Center on Myanmar
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Fetch and display reports on the map
+        async function loadReports() {
+            const response = await fetch('/api/reports');
+            const reports = await response.json();
+
+            reports.forEach(report => {
+                const { latitude, longitude, description, image_path } = report;
+
+                // Create a marker with a popup displaying image and description
+                const marker = L.marker([latitude, longitude]).addTo(map);
+                marker.bindPopup(`
+                    <div class="text-center">
+                        <img src="${image_path}" alt="Damage Image" class="w-full h-40 object-cover rounded mb-2">
+                        <p class="font-semibold">${description}</p>
+                    </div>
+                `);
+            });
+        }
+
+        loadReports();
+    </script>
+</body>
+</html>

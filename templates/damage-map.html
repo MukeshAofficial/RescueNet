@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Volunteer Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        /* Background color similar to main site */
+        body {
+            background-color: #1A202C;
+            color: #E2E8F0;
+        }
+
+        /* Popup styling */
+        .popup-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            padding: 1.5rem;
+            background-color: #2D3748;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .popup-icon {
+            font-size: 2.5rem;
+            color: #38A169;
+            animation: bounce 0.5s ease-in-out;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease;
+        }
+    </style>
+</head>
+
+<body class="font-sans">
+    <div class="container mx-auto px-4 py-6 fade-in">
+        <h1 class="text-3xl font-bold text-center mb-8">Disaster Volunteer Portal</h1>
+
+        <div class="text-center mb-6">
+            <a href="/view-reports" class="text-blue-400 underline">View Damage Reports</a>
+        </div>
+
+        <!-- Upload Form -->
+        <form id="uploadForm" enctype="multipart/form-data" class="bg-gray-800 p-6 rounded-lg shadow-md max-w-lg mx-auto">
+            <label class="block text-gray-200 text-sm font-bold mb-2">Image Upload:</label>
+            <input type="file" name="image" id="image" class="w-full mb-4 p-2 border rounded" accept="image/*" required>
+
+            <label class="block text-gray-200 text-sm font-bold mb-2">Description:</label>
+<textarea name="description" id="description" rows="3" class="w-full mb-4 p-2 border rounded bg-gray-100 text-black"
+    placeholder="Enter description..." required></textarea>
+
+            <label class="block text-gray-200 text-sm font-bold mb-2">Location:</label>
+            <div id="map" class="w-full h-64 mb-4 border rounded"></div>
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+
+            <button type="submit" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded">Submit</button>
+        </form>
+
+        <!-- Success Popup -->
+        <div id="popup" class="popup-container">
+            <div class="popup-content">
+                <i class="fas fa-check-circle popup-icon"></i>
+                <h2 class="text-2xl font-bold text-gray-100 mt-2">Submitted Successfully!</h2>
+                <p class="text-gray-300 mt-2">Your report has been successfully submitted.</p>
+                <button id="closePopup"
+                    class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([16.8661, 96.1951], 5); // Center on Myanmar
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        let marker;
+
+        // Set marker on map click
+        map.on('click', function (e) {
+            const { lat, lng } = e.latlng;
+
+            // Remove existing marker if any
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            marker = L.marker([lat, lng]).addTo(map);
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        });
+
+        // Show and hide the success popup
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            popup.style.display = 'block';
+        }
+
+        document.getElementById('closePopup').onclick = function () {
+            document.getElementById('popup').style.display = 'none';
+        };
+
+        // Handle form submission
+        document.getElementById('uploadForm').onsubmit = async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('image', document.getElementById('image').files[0]);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('latitude', document.getElementById('latitude').value);
+            formData.append('longitude', document.getElementById('longitude').value);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                showPopup();
+            } else {
+                alert('Failed to upload data.');
+            }
+        };
+    </script>
+</body>
+
+</html>

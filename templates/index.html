@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flood Response System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Additional CSS for animations */
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hover-grow:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white font-sans">
+    <!-- Header Section -->
+    <header class="py-10 text-center">
+        <h1 class="text-4xl font-bold fade-in">Myanmar Flood Response System</h1>
+        <p class="mt-4 text-gray-400">Real-time support and response for flood-related emergencies and needs.</p>
+    </header>
+
+    <!-- Features Section -->
+    <section class="container mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- News -->
+        <a href="/news" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-blue-400">🌍 Latest News</h2>
+            <p class="mt-4 text-gray-300">Stay updated with real-time flood alerts, emergency announcements, and relief news in your area.</p>
+        </a>
+
+        <!-- Map Clean Water -->
+        <a href="/map-need" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-teal-400">💧 Map of Clean Water Access</h2>
+            <p class="mt-4 text-gray-300">Find nearby clean water sources on an interactive map, updated regularly to ensure accuracy.</p>
+        </a>
+
+        <!-- Damage Reporting -->
+        <a href="/damage" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-red-400">📸 Damage Reporting</h2>
+            <p class="mt-4 text-gray-300">Report damages in your locality with photos and descriptions, helping authorities prioritize aid.</p>
+        </a>
+
+        <!-- Needed Items Map -->
+        <a href="/map" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-yellow-400">📍 Mark Needed Supplies</h2>
+            <p class="mt-4 text-gray-300">Mark items you need on the map, like food or medical supplies, to receive local and NGO support.</p>
+        </a>
+
+        <!-- Voice-based Emergency Chatbot -->
+        <a href="/gpt" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-pink-400">🗣️ Voice Emergency Bot</h2>
+            <p class="mt-4 text-gray-300">Voice-based AI chatbot provides emergency and first aid advice quickly, even in critical moments.</p>
+        </a>
+
+        <!-- Chatbot for Information -->
+        <a href="/chatbot" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-green-400">💬 Medical & Flood Information Bot</h2>
+            <p class="mt-4 text-gray-300">Ask questions related to medical advice, flood safety, and more with our comprehensive AI chatbot.</p>
+        </a>
+
+        <!-- Injury Image Scanner -->
+        <a href="/scan" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-indigo-400">📷 Injury Scanner</h2>
+            <p class="mt-4 text-gray-300">Scan injuries and receive AI recommendations for immediate treatment and next steps.</p>
+        </a>
+
+        <!-- Drowning Detection System -->
+        <a href="/dashboard" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-purple-400">🚨 Drowning Detection Alert</h2>
+            <p class="mt-4 text-gray-300">Monitor and detect possible drowning cases in real-time, alerting rescuers immediately.</p>
+        </a>
+
+        <a href="/chat" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-red-400">🚨 Emergency Chatroom</h2>
+            <p class="mt-4 text-gray-300">Join our emergency chatroom for immediate assistance and support during flood crises.</p>
+        </a>
+
+        <!-- Additional Feature 1 -->
+       
+
+        <!-- Additional Feature 2 -->
+        <a href="/dashboard-main" class="bg-gray-800 rounded-lg p-6 hover-grow fade-in">
+            <h2 class="text-2xl font-semibold text-pink-600">⚙️Dashboard</h2>
+            <p class="mt-4 text-gray-300"> Access the dashboard to view real-time insights and data on water quality, pollution levels, and critical resource needs in affected areas, detailed analytics.</p>
+        </a>
+        
+    </section>
+</body>
+
+</html>

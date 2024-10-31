@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <title>Myanmar Flood Monitoring Dashboard Demo purpose only</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>
+            Demo Only  Concept</h2>
+        <div id="map" style="height: 300px; width: 100%; display: none;"></div>
+        <button id="analyze-button" class="analyze-button">Analyze Flood Threat</button>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard">
+        <h1 class="dashboard-title">Myanmar Flood Threat Monitoring</h1>
+        <div class="camera-grid">
+            <!-- Replace camera IDs with Myanmar state names -->
+            <div class="camera" id="camera1">
+                <h3>Kachin</h3>
+                <video class="camera-feed" autoplay muted src="/static/feed1.mp4"></video>
+            </div>
+            <div class="camera" id="camera2">
+                <h3>Shan</h3>
+                <video class="camera-feed" autoplay muted src="/static/feed2.mp4"></video>
+            </div>
+            <div class="camera" id="camera3">
+                <h3>Chin</h3>
+                <video class="camera-feed" autoplay muted src="/static/feed3.mp4"></video>
+            </div>
+            <div class="camera" id="camera4">
+                <h3>Sagaing</h3>
+                <video class="camera-feed" autoplay muted src="/static/feed4.mp4"></video>
+            </div>
+            <div class="camera" id="camera5">
+                <h3>Yangon</h3>
+                <video class="camera-feed" autoplay muted src="/static/feed5.mp4"></video>
+            </div>
+            <div class="camera" id="camera6">
+                <h3>Mon</h3>
+                <video class="camera-feed" autoplay muted src="/static/feed6.mp4"></video>
+            </div>
+            <div class="camera" id="camera7">
+                <h3>Rakhine</h3>
+                <video class="camera-feed" autoplay muted src="/static/feed7.mp4"></video>
+            </div>
+            <div class="camera" id="camera8">
+                <h3>Ayeyarwady</h3>
+                <video class="camera-feed" autoplay muted src="/static/feed8.mp4"></video>
+            </div>
+            <div class="camera" id="camera9">
+                <h3>Kayah</h3>
+                <video class="camera-feed" autoplay muted src="/static/feed9.mp4"></video>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

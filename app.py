@@ -10,8 +10,7 @@ import PIL.Image
 import base64
 from werkzeug.utils import secure_filename
 import sqlite3
-from flask_socketio import SocketIO, join_room, leave_room, emit
-import eventlet
+
 
 
 app = Flask(__name__)
@@ -20,7 +19,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 db = SQLAlchemy(app)
-socketio = SocketIO(app, async_mode='eventlet')
+
 
 # Change to a different database URI for water quality
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///locations2.db'  # Updated database name
@@ -360,30 +359,6 @@ def analyze_cameras():
 def dashboard_redirect():
     return render_template('dashboard.html')
 
-@app.route('/chat')
-def chat():
-    return render_template('chat.html')
-
-@socketio.on('join')
-def join(data):
-    room = data['room']
-    join_room(room)
-    emit('message', {'msg': 'User has entered the room.'}, room=room)
-
-@socketio.on('leave')
-def leave(data):
-    room = data['room']
-    leave_room(room)
-    emit('message', {'msg': 'User has left the room.'}, room=room)
-
-@socketio.on('message')
-def handle_message(data):
-    message = data['message']
-    room = data['room']
-    emit('message', {'msg': message}, room=room)
-
-
-app.config['SECRET_KEY'] = 'your_secret_key_here'
 
 @app.route('/')
 def index():
@@ -405,5 +380,5 @@ def get_response():
 
 if __name__ == '__main__':
     init_db()
-    socketio.run(app, debug=True)
+    app.run(debug=True)
     
